@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Type Dash Arena — Typing Challenge Games</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Orbitron:wght@600;700;800;900&family=JetBrains+Mono:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#39FF88;
+  --green-deep:#14C468;
+  --cyan:#31E1F5;
+  --cyan-deep:#0EA9BE;
+  --magenta:#FF3DAE;
+  --magenta-deep:#D61C87;
+  --violet:#9B6BFF;
+  --violet-deep:#6C3FD9;
+  --gold:#FFD34D;
+  --gold-deep:#E8A31C;
+  --bg:#0B0D17;
+  --bg-deep:#05060C;
+  --panel:#12152A;
+  --card:#171A33;
+  --ink:#F1F3FF;
+  --ink-soft:#8D93C4;
+  --line:#262A4E;
+  color-scheme: dark;
+}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0;
+  font-family:'Nunito',sans-serif;
+  color:var(--ink);
+  min-height:100%;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  overflow-x:hidden;
+  background:
+    radial-gradient(650px 450px at 88% -6%, rgba(57,255,136,.16), transparent 60%),
+    radial-gradient(600px 450px at -6% 105%, rgba(49,225,245,.16), transparent 55%),
+    radial-gradient(500px 400px at 50% 40%, rgba(255,61,174,.08), transparent 60%),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
+  background-repeat:no-repeat;
+}
+h1,h2,h3,.display{font-family:'Baloo 2',sans-serif;}
+.sci{font-family:'Orbitron',sans-serif;}
+.mono{font-family:'JetBrains Mono',monospace;}
+.wrap{max-width:1000px;margin:0 auto;padding:28px 20px 60px;}
+
+/* ---------- HUB HEADER ---------- */
+.hub-header{text-align:center;margin-bottom:26px;}
+.hub-eyebrow{
+  display:inline-block;
+  background:var(--violet-deep);
+  color:#fff;
+  font-family:'Orbitron',sans-serif;
+  font-weight:700;
+  font-size:12px;
+  padding:7px 16px;
+  border-radius:999px;
+  letter-spacing:1px;
+  margin-bottom:16px;
+}
+.hub-title{
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(28px,5.6vw,48px);
+  font-weight:800;
+  margin:0 0 10px;
+  line-height:1.15;
+  letter-spacing:.5px;
+  background:linear-gradient(95deg,var(--green),var(--cyan) 50%,var(--magenta));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 16px rgba(57,255,136,.25));
+}
+.hub-sub{color:var(--ink-soft);font-size:16.5px;font-weight:600;max-width:560px;margin:0 auto;}
+
+/* ---------- PANEL ---------- */
+.panel{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:22px;
+  box-shadow:0 14px 0 rgba(0,0,0,.35), 0 20px 30px rgba(0,0,0,.4);
+  margin-bottom:20px;
+}
+.panel h3{margin:0 0 12px;font-size:18px;}
+.seg{display:flex;gap:8px;background:#0D0F22;border:1px solid var(--line);padding:6px;border-radius:14px;}
+.seg button{
+  flex:1;border:none;background:transparent;padding:11px 10px;border-radius:10px;
+  font-family:'Baloo 2';font-weight:700;font-size:14.5px;color:var(--ink-soft);cursor:pointer;transition:.15s;
+}
+.seg button.active{background:var(--violet-deep);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.3);}
+.team-inputs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;}
+.team-inputs.hidden{display:none;}
+.team-field label{display:block;font-size:11.5px;font-weight:800;letter-spacing:.3px;color:var(--ink-soft);margin-bottom:5px;}
+.team-field input{
+  width:100%;border:2px solid var(--line);border-radius:10px;padding:10px 12px;
+  font-family:'Nunito';font-weight:700;font-size:14.5px;outline:none;background:#0D0F22;color:var(--ink);transition:.15s;
+}
+.team-field:nth-child(1) input{border-color:var(--green-deep);}
+.team-field:nth-child(2) input{border-color:var(--cyan-deep);}
+.team-field input:focus{border-color:var(--gold);}
+.timer-row{margin-top:16px;}
+.timer-row label{font-size:11.5px;font-weight:800;color:var(--ink-soft);letter-spacing:.3px;}
+.timer-row .val{font-family:'Orbitron';font-weight:800;color:var(--green);font-size:15px;}
+input[type=range]{width:100%;accent-color:var(--green);margin-top:8px;}
+
+/* ---------- GAME CARDS ---------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;}
+.gamecard{
+  border-radius:22px;padding:22px;position:relative;overflow:hidden;cursor:pointer;
+  border:1px solid rgba(255,255,255,.15);text-align:left;color:#fff;min-height:200px;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  box-shadow:0 12px 0 rgba(0,0,0,.35), 0 20px 26px rgba(0,0,0,.45);
+  transition:transform .15s ease;
+}
+.gamecard:hover{transform:translateY(-4px);}
+.gamecard:active{transform:translateY(2px);}
+.gamecard .emoji{position:absolute;top:14px;right:14px;font-size:42px;filter:drop-shadow(0 4px 0 rgba(0,0,0,.25));transform:rotate(6deg);}
+.gamecard h3{font-size:21px;margin:0 0 6px;}
+.gamecard p{margin:0;font-size:13.5px;font-weight:700;opacity:.92;}
+.gamecard .tag{display:inline-block;background:rgba(255,255,255,.2);border-radius:999px;padding:4px 10px;font-size:10.5px;font-weight:800;margin-bottom:10px;width:fit-content;letter-spacing:.3px;}
+.gc-1{background:linear-gradient(145deg,var(--cyan),var(--cyan-deep));}
+.gc-2{background:linear-gradient(145deg,var(--magenta),var(--magenta-deep));}
+.gc-3{background:linear-gradient(145deg,var(--green),var(--green-deep));color:#052414;}
+.gc-3 .tag{background:rgba(0,0,0,.15);}
+
+/* ---------- GAME SCREEN ---------- */
+.screen{display:none;}
+.screen.active{display:block;}
+.game-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+.backbtn{
+  border:none;background:var(--violet-deep);color:#fff;font-family:'Baloo 2';font-weight:700;font-size:13.5px;
+  padding:10px 16px;border-radius:12px;cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.35);
+}
+.backbtn:active{transform:translateY(2px);box-shadow:none;}
+.hud{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.pill{font-family:'Orbitron';font-weight:700;font-size:13px;padding:9px 15px;border-radius:999px;background:var(--card);border:1px solid var(--line);}
+.pill.turn{background:var(--gold);color:var(--bg-deep);}
+.pill.timer{background:var(--violet-deep);color:#fff;min-width:76px;text-align:center;}
+.pill.timer.urgent{background:var(--magenta-deep);animation:pulse .6s infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
+
+.stage{
+  background:var(--card);border:1px solid var(--line);border-radius:22px;padding:24px;min-height:420px;
+  box-shadow:0 14px 0 rgba(0,0,0,.35), 0 20px 30px rgba(0,0,0,.4);position:relative;overflow:hidden;
+}
+.center-msg{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:380px;gap:14px;}
+.center-msg .big-emoji{font-size:60px;}
+.center-msg h2{font-size:26px;margin:0;font-family:'Orbitron';}
+.center-msg p{color:var(--ink-soft);font-weight:700;max-width:440px;margin:0;}
+.startbtn{
+  border:none;font-family:'Orbitron';font-weight:800;font-size:16px;letter-spacing:.5px;
+  color:var(--bg-deep);padding:16px 32px;border-radius:14px;cursor:pointer;
+  background:linear-gradient(145deg,var(--green),var(--green-deep));
+  box-shadow:0 6px 0 #0C8E4B;transition:.1s;
+}
+.startbtn:active{transform:translateY(4px);box-shadow:0 2px 0 #0C8E4B;}
+.startbtn.cyan{background:linear-gradient(145deg,var(--cyan),var(--cyan-deep));box-shadow:0 6px 0 #0A7B8C;}
+.startbtn.magenta{background:linear-gradient(145deg,var(--magenta),var(--magenta-deep));color:#fff;box-shadow:0 6px 0 #931765;}
+
+/* ---------- WORD RAIN ---------- */
+.rain-arena{position:relative;min-height:380px;border-radius:16px;overflow:hidden;
+  background:repeating-linear-gradient(180deg, rgba(255,255,255,.02) 0 2px, transparent 2px 34px);
+  border:1px solid var(--line);
+}
+.rain-groundline{position:absolute;left:0;right:0;bottom:44px;height:2px;background:linear-gradient(90deg,transparent,var(--magenta),transparent);opacity:.6;}
+.falling-word{
+  position:absolute;top:-40px;left:50%;transform:translateX(-50%);
+  font-family:'JetBrains Mono';font-weight:700;font-size:22px;
+  background:var(--panel);border:2px solid var(--cyan);border-radius:10px;padding:8px 14px;
+  white-space:nowrap;box-shadow:0 0 18px rgba(49,225,245,.25);
+}
+.falling-word .typed{color:var(--green);}
+.falling-word .untyped{color:var(--ink-soft);}
+.falling-word.missed{border-color:var(--magenta);animation:shakeMiss .3s;}
+.falling-word.done{animation:popGood .3s forwards;}
+@keyframes popGood{to{transform:translateX(-50%) scale(1.4);opacity:0;}}
+@keyframes shakeMiss{0%,100%{transform:translateX(-50%);}25%{transform:translateX(-58%);}75%{transform:translateX(-42%);}}
+.rain-hint{text-align:center;color:var(--ink-soft);font-weight:700;font-size:12.5px;margin-top:10px;}
+.rain-stats{position:absolute;top:10px;right:14px;font-family:'JetBrains Mono';font-size:12px;color:var(--ink-soft);}
+
+/* ---------- SENTENCE SPRINT ---------- */
+.sprint-wrap{display:flex;flex-direction:column;gap:18px;align-items:center;}
+.sprint-sentence{
+  font-family:'JetBrains Mono';font-size:clamp(16px,2.6vw,22px);line-height:1.8;
+  background:#0D0F22;border:1px solid var(--line);border-radius:16px;padding:22px 24px;
+  max-width:680px;letter-spacing:.5px;
+}
+.sprint-sentence span{transition:.05s;}
+.sprint-sentence .pending{color:var(--ink-soft);}
+.sprint-sentence .correct{color:var(--green);}
+.sprint-sentence .wrong{color:var(--magenta);background:rgba(255,61,174,.15);border-radius:3px;}
+.sprint-sentence .cursor{border-left:2px solid var(--gold);animation:blink 1s step-end infinite;}
+@keyframes blink{50%{border-color:transparent;}}
+.sprint-hidden-input{
+  position:absolute;opacity:0;height:1px;width:1px;pointer-events:none;
+}
+.sprint-livestats{display:flex;gap:22px;font-family:'JetBrains Mono';font-size:13px;color:var(--ink-soft);}
+.sprint-livestats b{color:var(--ink);}
+.sprint-tapzone{
+  border:2px dashed var(--line);border-radius:14px;padding:14px 20px;text-align:center;
+  font-family:'Baloo 2';font-weight:700;color:var(--ink-soft);cursor:text;font-size:14px;
+}
+.sprint-tapzone:hover{border-color:var(--cyan);color:var(--ink);}
+
+/* ---------- KEY NINJA ---------- */
+.ninja-wrap{display:flex;flex-direction:column;align-items:center;gap:20px;}
+.ninja-key{
+  width:170px;height:170px;border-radius:28px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron';font-weight:800;font-size:76px;
+  background:linear-gradient(150deg,var(--panel),var(--card));
+  border:4px solid var(--cyan);box-shadow:0 0 30px rgba(49,225,245,.3), 0 10px 0 rgba(0,0,0,.4);
+  transition:transform .08s, border-color .15s;
+}
+.ninja-key.hit{border-color:var(--green);box-shadow:0 0 34px rgba(57,255,136,.45);transform:scale(1.08);}
+.ninja-key.miss{border-color:var(--magenta);box-shadow:0 0 34px rgba(255,61,174,.45);}
+.ninja-streak{font-family:'JetBrains Mono';color:var(--gold);font-weight:700;font-size:14px;min-height:20px;}
+.ninja-hint{color:var(--ink-soft);font-weight:700;font-size:13px;}
+
+/* ---------- SCOREBOARD / RESULTS ---------- */
+.score-row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin:18px 0;}
+.score-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px 24px;text-align:center;min-width:150px;}
+.score-card .who{font-family:'Baloo 2';font-weight:700;font-size:13px;color:var(--ink-soft);}
+.score-card .num{font-family:'Orbitron';font-weight:800;font-size:32px;color:var(--green);}
+.score-card .extra{font-family:'JetBrains Mono';font-size:11.5px;color:var(--cyan);margin-top:4px;}
+.winner-banner{font-family:'Orbitron';font-weight:800;font-size:22px;background:linear-gradient(95deg,var(--gold),var(--magenta));-webkit-background-clip:text;background-clip:text;color:transparent;}
+
+/* ---------- EDIT MODAL ---------- */
+.modal-backdrop{position:fixed;inset:0;background:rgba(3,4,14,.8);display:none;align-items:center;justify-content:center;z-index:50;padding:16px;}
+.modal-backdrop.active{display:flex;}
+.modal{background:var(--card);border:1px solid var(--line);border-radius:20px;max-width:620px;width:100%;max-height:88vh;overflow:auto;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,.5);}
+.modal h3{margin:0 0 6px;font-size:19px;}
+.modal .hint{color:var(--ink-soft);font-weight:700;font-size:12.5px;margin-bottom:12px;line-height:1.5;}
+.modal textarea{
+  width:100%;min-height:240px;border:2px solid var(--line);border-radius:12px;background:#0D0F22;color:var(--ink);
+  padding:14px;font-family:'JetBrains Mono';font-size:13px;line-height:1.6;resize:vertical;outline:none;
+}
+.modal textarea:focus{border-color:var(--cyan);}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;}
+.btn-secondary{border:1px solid var(--line);background:var(--panel);color:var(--ink);font-family:'Baloo 2';font-weight:700;padding:10px 16px;border-radius:10px;cursor:pointer;}
+.btn-primary{border:none;background:var(--violet-deep);color:#fff;font-family:'Baloo 2';font-weight:700;padding:10px 18px;border-radius:10px;cursor:pointer;}
+.err{color:var(--magenta);font-weight:800;font-size:12.5px;margin-top:8px;display:none;}
+
+canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:80;}
+footer{text-align:center;color:var(--ink-soft);font-weight:700;font-size:12px;margin-top:28px;opacity:.7;}
+</style>
+</head>
+<body>
+<canvas id="confetti"></canvas>
+<div class="wrap">
+
+  <!-- ============ HUB ============ -->
+  <div class="screen active" id="screen-hub">
+    <div class="hub-header">
+      <span class="hub-eyebrow">⌨️ TYPING CHALLENGE ARENA</span>
+      <h1 class="hub-title">Type Dash Arena</h1>
+      <p class="hub-sub">Three fast-paced keyboard games to build speed and accuracy — catch falling words, sprint through sentences, and duel the clock letter by letter.</p>
+    </div>
+
+    <div class="panel">
+      <h3>1. Who's playing?</h3>
+      <div class="seg" id="modeSeg">
+        <button class="active" data-mode="solo">🙋 Solo Player</button>
+        <button data-mode="teams">🤝 Two Teams</button>
+      </div>
+      <div class="team-inputs hidden" id="teamInputs">
+        <div class="team-field">
+          <label>TEAM 1 NAME</label>
+          <input id="team1name" maxlength="18" value="Team Turbo" />
+        </div>
+        <div class="team-field">
+          <label>TEAM 2 NAME</label>
+          <input id="team2name" maxlength="18" value="Team Flash" />
+        </div>
+      </div>
+      <div class="timer-row">
+        <label>ROUND TIMER: <span class="val" id="timerVal">90 seconds</span></label>
+        <input type="range" id="timerSlider" min="60" max="120" step="10" value="90">
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>2. Pick a challenge</h3>
+      <div class="grid">
+        <button class="gamecard gc-1" data-game="rain">
+          <span class="emoji">🌧️</span>
+          <span class="tag">Falling Words</span>
+          <h3>Word Rain</h3>
+          <p>Type each word before it hits the ground!</p>
+        </button>
+        <button class="gamecard gc-2" data-game="sprint">
+          <span class="emoji">🏁</span>
+          <span class="tag">WPM &amp; Accuracy</span>
+          <h3>Sentence Sprint</h3>
+          <p>Type full sentences fast and clean.</p>
+        </button>
+        <button class="gamecard gc-3" data-game="ninja">
+          <span class="emoji">⌨️</span>
+          <span class="tag">Reflex Keys</span>
+          <h3>Key Ninja</h3>
+          <p>Smash the matching key before it changes!</p>
+        </button>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;">
+        <button class="btn-secondary" onclick="openEditor('rain')">✏️ Edit Word Rain list</button>
+        <button class="btn-secondary" onclick="openEditor('sprint')">✏️ Edit sprint sentences</button>
+      </div>
+    </div>
+    <footer>⌨️ Works fully offline · use a physical keyboard for best results · your edits are only saved on this device</footer>
+  </div>
+
+  <!-- ============ WORD RAIN ============ -->
+  <div class="screen" id="screen-rain">
+    <div class="game-top">
+      <button class="backbtn" onclick="goHub()">← Back</button>
+      <div class="hud" id="rainHud"></div>
+    </div>
+    <div class="stage" id="rainStage"></div>
+  </div>
+
+  <!-- ============ SENTENCE SPRINT ============ -->
+  <div class="screen" id="screen-sprint">
+    <div class="game-top">
+      <button class="backbtn" onclick="goHub()">← Back</button>
+      <div class="hud" id="sprintHud"></div>
+    </div>
+    <div class="stage" id="sprintStage"></div>
+  </div>
+
+  <!-- ============ KEY NINJA ============ -->
+  <div class="screen" id="screen-ninja">
+    <div class="game-top">
+      <button class="backbtn" onclick="goHub()">← Back</button>
+      <div class="hud" id="ninjaHud"></div>
+    </div>
+    <div class="stage" id="ninjaStage"></div>
+  </div>
+
+</div>
+
+<!-- ============ EDIT MODAL ============ -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal">
+    <h3 id="modalTitle">Edit content</h3>
+    <p class="hint" id="modalHint"></p>
+    <textarea id="modalTextarea" spellcheck="false"></textarea>
+    <p class="err" id="modalErr"></p>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="resetEditorToDefault()">Reset to default</button>
+      <button class="btn-secondary" onclick="closeEditor()">Cancel</button>
+      <button class="btn-primary" onclick="saveEditor()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   DATA (editable)
+   ============================================================ */
+const DEFAULT_WORDS = [
+  "rice","fish","milk","eggs","plan","bank","cash","save","work","home",
+  "food","shop","cook","farm","desk","book","page","word","type","keys",
+  "mail","note","list","goal","time","week","meal","text","font","menu",
+  "quiz","exam","grow","glow","needs","wants","color","paper","class","study",
+  "learn","write","speed","score","round","timer","level","power","plant","fruit",
+  "bread","snack","drink","clean","trash","reuse","waste","money","spend","share",
+  "skill","craft","cloth","shirt","chair","table","house","light","water","photo"
+];
+
+const DEFAULT_SENTENCES = [
+  "The quick brown fox jumps over the lazy dog.",
+  "Good budgeting means spending less than you earn.",
+  "Rice, corn, and bread give the body energy to move.",
+  "Fish, eggs, and beans help the body grow strong.",
+  "Fruits and vegetables protect the body from sickness.",
+  "You can change the page color from the Design tab.",
+  "A page border adds a decorative frame to your work.",
+  "Needs are things we must have just to survive each day.",
+  "Wants are nice to have but are not truly essential.",
+  "Practice typing every day to build speed and accuracy.",
+  "Saving a little money each week adds up over time.",
+  "A balanced plate has both energy foods and body-building foods.",
+];
+
+function loadList(key, fallback){
+  try{
+    const raw = localStorage.getItem(key);
+    if(!raw) return JSON.parse(JSON.stringify(fallback));
+    const parsed = JSON.parse(raw);
+    if(Array.isArray(parsed) && parsed.length) return parsed;
+    return JSON.parse(JSON.stringify(fallback));
+  }catch(e){ return JSON.parse(JSON.stringify(fallback)); }
+}
+function saveList(key, list){ try{ localStorage.setItem(key, JSON.stringify(list)); }catch(e){} }
+
+let wordList = loadList('typedash_words', DEFAULT_WORDS);
+let sentenceList = loadList('typedash_sentences', DEFAULT_SENTENCES);
+
+/* ============================================================
+   SETUP STATE
+   ============================================================ */
+let MODE = 'solo';
+let TEAM1 = 'Team Turbo';
+let TEAM2 = 'Team Flash';
+let ROUND_SECONDS = 90;
+
+const modeSeg = document.getElementById('modeSeg');
+modeSeg.addEventListener('click', e=>{
+  const btn = e.target.closest('button'); if(!btn) return;
+  MODE = btn.dataset.mode;
+  [...modeSeg.children].forEach(b=>b.classList.toggle('active', b===btn));
+  document.getElementById('teamInputs').classList.toggle('hidden', MODE!=='teams');
+});
+document.getElementById('team1name').addEventListener('input', e=> TEAM1 = e.target.value.trim() || 'Team 1');
+document.getElementById('team2name').addEventListener('input', e=> TEAM2 = e.target.value.trim() || 'Team 2');
+const timerSlider = document.getElementById('timerSlider');
+timerSlider.addEventListener('input', ()=>{
+  ROUND_SECONDS = parseInt(timerSlider.value,10);
+  document.getElementById('timerVal').textContent = ROUND_SECONDS + ' seconds';
+});
+document.querySelectorAll('.gamecard').forEach(card=>{
+  card.addEventListener('click', ()=> launchGame(card.dataset.game));
+});
+function goHub(){
+  stopAllTimers();
+  document.removeEventListener('keydown', ninjaKeyHandler);
+  document.removeEventListener('keydown', rainKeyHandler);
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-hub').classList.add('active');
+}
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function launchGame(game){
+  if(game==='rain') startRainIntro();
+  if(game==='sprint') startSprintIntro();
+  if(game==='ninja') startNinjaIntro();
+}
+
+/* ============================================================
+   SOUND
+   ============================================================ */
+let actx;
+function beep(freq=440, dur=0.09, type='sine', vol=0.15){
+  try{
+    actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+    const o = actx.createOscillator(); const g = actx.createGain();
+    o.type = type; o.frequency.value = freq; g.gain.value = vol;
+    o.connect(g); g.connect(actx.destination); o.start();
+    g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + dur);
+    o.stop(actx.currentTime + dur + 0.02);
+  }catch(e){}
+}
+function sfxGood(){ beep(740,.07,'triangle',.16); setTimeout(()=>beep(988,.1,'triangle',.14),60); }
+function sfxBad(){ beep(180,.15,'sawtooth',.12); }
+function sfxTick(){ beep(880,.03,'square',.05); }
+function sfxKey(){ beep(1200,.02,'square',.05); }
+
+/* ============================================================
+   CONFETTI
+   ============================================================ */
+const confettiCanvas = document.getElementById('confetti');
+const cctx = confettiCanvas.getContext('2d');
+function resizeConfetti(){ confettiCanvas.width = innerWidth; confettiCanvas.height = innerHeight; }
+resizeConfetti(); window.addEventListener('resize', resizeConfetti);
+let confettiPieces = [];
+function fireConfetti(n=140){
+  const colors=['#39FF88','#31E1F5','#FF3DAE','#9B6BFF','#FFD34D'];
+  for(let i=0;i<n;i++){
+    confettiPieces.push({
+      x: Math.random()*confettiCanvas.width, y: -20 - Math.random()*200,
+      w: 6+Math.random()*6, h: 8+Math.random()*10,
+      vy: 2+Math.random()*3.5, vx: -2+Math.random()*4,
+      rot: Math.random()*360, vr: -10+Math.random()*20,
+      color: colors[Math.floor(Math.random()*colors.length)], life: 0
+    });
+  }
+  if(!confettiRunning){ confettiRunning=true; requestAnimationFrame(runConfetti); }
+}
+let confettiRunning=false;
+function runConfetti(){
+  cctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
+  confettiPieces.forEach(p=>{
+    p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr; p.life++;
+    cctx.save(); cctx.translate(p.x,p.y); cctx.rotate(p.rot*Math.PI/180);
+    cctx.fillStyle=p.color; cctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); cctx.restore();
+  });
+  confettiPieces = confettiPieces.filter(p=> p.y < confettiCanvas.height+40 && p.life<400);
+  if(confettiPieces.length>0){ requestAnimationFrame(runConfetti); }
+  else{ confettiRunning=false; cctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height); }
+}
+
+/* ============================================================
+   Utility + shared session runner
+   ============================================================ */
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+let activeTimers = [];
+function stopAllTimers(){ activeTimers.forEach(t=>clearInterval(t)); activeTimers=[]; }
+
+function runSession(playRound, showResults){
+  if(MODE==='solo'){
+    playRound('Player', (score,extra)=> showResults([{label:'Player', score, extra}]) );
+  } else {
+    playRound(TEAM1, (score1,extra1)=>{
+      playRound(TEAM2, (score2,extra2)=>{
+        showResults([{label:TEAM1,score:score1,extra:extra1},{label:TEAM2,score:score2,extra:extra2}]);
+      });
+    });
+  }
+}
+
+function renderResults(stageEl, results, gameLabel, onReplay){
+  let winnerHtml = '';
+  if(results.length===2){
+    if(results[0].score===results[1].score){
+      winnerHtml = `<div class="winner-banner">🤝 It's a tie!</div>`;
+    } else {
+      const w = results[0].score>results[1].score ? results[0] : results[1];
+      winnerHtml = `<div class="winner-banner">🏆 ${escapeHtml(w.label)} wins!</div>`;
+    }
+    fireConfetti(160);
+  } else {
+    winnerHtml = `<div class="winner-banner">⚡ Great run!</div>`;
+    fireConfetti(120);
+  }
+  stageEl.innerHTML = `
+    <div class="center-msg">
+      <div class="big-emoji">🏆</div>
+      <h2>${gameLabel} — Results</h2>
+      ${winnerHtml}
+      <div class="score-row">
+        ${results.map(r=>`<div class="score-card"><div class="who">${escapeHtml(r.label)}</div><div class="num">${r.score}</div>${r.extra?`<div class="extra">${escapeHtml(r.extra)}</div>`:''}</div>`).join('')}
+      </div>
+      <button class="startbtn" id="replayBtn">🔁 Play Again</button>
+    </div>`;
+  document.getElementById('replayBtn').onclick = onReplay;
+}
+
+/* ============================================================
+   GAME 1 — WORD RAIN
+   ============================================================ */
+let rainKeyHandler = null;
+
+function startRainIntro(){
+  showScreen('screen-rain');
+  document.getElementById('rainHud').innerHTML = '';
+  const stage = document.getElementById('rainStage');
+  stage.innerHTML = `
+    <div class="center-msg">
+      <div class="big-emoji">🌧️</div>
+      <h2>Word Rain</h2>
+      <p>A word falls from the top. Just start typing it — get every letter right before it reaches the ground! It gets faster as you go.</p>
+      <button class="startbtn cyan" id="rainStartBtn">▶️ Start Round</button>
+    </div>`;
+  document.getElementById('rainStartBtn').onclick = ()=> runSession(playRainRound, (results)=>{
+    renderResults(document.getElementById('rainStage'), results, 'Word Rain', startRainIntro);
+  });
+}
+
+function playRainRound(label, onEnd){
+  const stage = document.getElementById('rainStage');
+  const hud = document.getElementById('rainHud');
+  let score = 0, secs = ROUND_SECONDS, elapsed = 0, streak = 0;
+  const pool = shuffle(wordList);
+  let poolIdx = 0;
+  let word = '', typedIndex = 0, fallTimeout = null, wordEl = null, active = false;
+
+  hud.innerHTML = `
+    <span class="pill turn">🎮 ${escapeHtml(label)}'s turn</span>
+    <span class="pill">⚡ <span id="rainScore">0</span></span>
+    <span class="pill timer" id="rainTimerPill">${secs}s</span>`;
+
+  stage.innerHTML = `
+    <div class="rain-arena" id="rainArena">
+      <div class="rain-stats" id="rainStreak"></div>
+      <div class="rain-groundline"></div>
+    </div>
+    <div class="rain-hint">Just start typing — no need to click anything.</div>`;
+  const arena = document.getElementById('rainArena');
+
+  function renderWord(){
+    if(!wordEl) return;
+    const typed = word.slice(0, typedIndex);
+    const rest = word.slice(typedIndex);
+    wordEl.innerHTML = `<span class="typed">${escapeHtml(typed)}</span><span class="untyped">${escapeHtml(rest)}</span>`;
+  }
+
+  function spawnWord(){
+    word = pool[poolIdx % pool.length]; poolIdx++;
+    typedIndex = 0; active = true;
+    wordEl = document.createElement('div');
+    wordEl.className = 'falling-word';
+    wordEl.style.left = (30 + Math.random()*40) + '%';
+    arena.appendChild(wordEl);
+    renderWord();
+    const duration = Math.max(4800, 9000 - elapsed*20);
+    const groundY = arena.clientHeight - 60;
+    wordEl.style.transition = `top ${duration}ms linear`;
+    requestAnimationFrame(()=>{ wordEl.style.top = groundY + 'px'; });
+    fallTimeout = setTimeout(()=>{ missWord(); }, duration);
+  }
+
+  function missWord(){
+    if(!active) return;
+    active = false;
+    streak = 0;
+    sfxBad();
+    if(wordEl){ wordEl.classList.add('missed'); }
+    setTimeout(()=>{ if(wordEl && wordEl.parentNode) wordEl.remove(); if(secs>0) spawnWord(); }, 260);
+  }
+
+  function completeWord(){
+    active = false;
+    clearTimeout(fallTimeout);
+    const bonus = 5;
+    score += 10 + bonus; streak++;
+    if(streak>0 && streak%5===0) score += 15;
+    sfxGood();
+    document.getElementById('rainScore').textContent = score;
+    document.getElementById('rainStreak').textContent = streak>=2 ? `🔥 Streak x${streak}` : '';
+    if(wordEl){ wordEl.classList.add('done'); }
+    setTimeout(()=>{ if(wordEl && wordEl.parentNode) wordEl.remove(); if(secs>0) spawnWord(); }, 200);
+  }
+
+  rainKeyHandler = function(e){
+    if(!active || secs<=0) return;
+    if(e.key.length!==1) return; // ignore modifier/special keys
+    const expected = word[typedIndex];
+    if(expected && e.key.toLowerCase()===expected.toLowerCase()){
+      typedIndex++;
+      renderWord();
+      if(typedIndex>=word.length){ completeWord(); }
+    }
+  };
+  document.addEventListener('keydown', rainKeyHandler);
+
+  spawnWord();
+
+  const timerPill = document.getElementById('rainTimerPill');
+  const t = setInterval(()=>{
+    secs--; elapsed++;
+    if(secs<=10 && secs>0){ timerPill.classList.add('urgent'); sfxTick(); }
+    timerPill.textContent = Math.max(secs,0)+'s';
+    if(secs<=0){
+      clearInterval(t); clearTimeout(fallTimeout);
+      document.removeEventListener('keydown', rainKeyHandler);
+      onEnd(score);
+    }
+  },1000);
+  activeTimers.push(t);
+}
+
+/* ============================================================
+   GAME 2 — SENTENCE SPRINT
+   ============================================================ */
+function startSprintIntro(){
+  showScreen('screen-sprint');
+  document.getElementById('sprintHud').innerHTML = '';
+  const stage = document.getElementById('sprintStage');
+  stage.innerHTML = `
+    <div class="center-msg">
+      <div class="big-emoji">🏁</div>
+      <h2>Sentence Sprint</h2>
+      <p>Type each sentence exactly as shown. As soon as you finish one, the next appears. Your WPM and accuracy are tracked for the whole round!</p>
+      <button class="startbtn magenta" id="sprintStartBtn">▶️ Start Round</button>
+    </div>`;
+  document.getElementById('sprintStartBtn').onclick = ()=> runSession(playSprintRound, (results)=>{
+    renderResults(document.getElementById('sprintStage'), results, 'Sentence Sprint', startSprintIntro);
+  });
+}
+
+function playSprintRound(label, onEnd){
+  const stage = document.getElementById('sprintStage');
+  const hud = document.getElementById('sprintHud');
+  let score = 0, secs = ROUND_SECONDS;
+  let totalCorrectChars = 0, totalCharsTyped = 0;
+  const pool = shuffle(sentenceList);
+  let sIdx = 0;
+  let sentence = '';
+  let finished = false;
+
+  hud.innerHTML = `
+    <span class="pill turn">🎮 ${escapeHtml(label)}'s turn</span>
+    <span class="pill">⚡ <span id="sprintScore">0</span></span>
+    <span class="pill timer" id="sprintTimerPill">${secs}s</span>`;
+
+  stage.innerHTML = `
+    <div class="sprint-wrap">
+      <div class="sprint-sentence" id="sprintSentence"></div>
+      <div class="sprint-tapzone" id="sprintTap">⌨️ Tap here, then just start typing the sentence above.</div>
+      <input id="sprintInput" class="sprint-hidden-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+      <div class="sprint-livestats"><span>⌨️ WPM: <b id="liveWpm">0</b></span><span>🎯 Accuracy: <b id="liveAcc">100</b>%</span></div>
+    </div>`;
+
+  const input = document.getElementById('sprintInput');
+  const sentenceEl = document.getElementById('sprintSentence');
+  document.getElementById('sprintTap').addEventListener('click', ()=> input.focus());
+  stage.addEventListener('click', ()=> input.focus());
+
+  function nextSentence(){
+    if(sIdx>=pool.length) sIdx = 0;
+    sentence = pool[sIdx++];
+    input.value = '';
+    renderSentence();
+  }
+
+  function renderSentence(){
+    const typed = input.value;
+    let html = '';
+    for(let i=0;i<sentence.length;i++){
+      const ch = sentence[i];
+      let cls = 'pending';
+      if(i < typed.length){ cls = typed[i]===ch ? 'correct' : 'wrong'; }
+      const cursor = i===typed.length ? ' cursor' : '';
+      html += `<span class="${cls}${cursor}">${escapeHtml(ch)}</span>`;
+    }
+    sentenceEl.innerHTML = html;
+  }
+
+  function updateLiveStats(){
+    const elapsedMin = Math.max(0.02, (ROUND_SECONDS - secs)/60);
+    const wpm = Math.round((totalCorrectChars/5)/elapsedMin);
+    const acc = totalCharsTyped>0 ? Math.round(totalCorrectChars/totalCharsTyped*100) : 100;
+    document.getElementById('liveWpm').textContent = isFinite(wpm) ? Math.max(0,wpm) : 0;
+    document.getElementById('liveAcc').textContent = acc;
+  }
+
+  input.addEventListener('input', ()=>{
+    if(finished) return;
+    renderSentence();
+    if(input.value.length >= sentence.length){
+      let correct = 0;
+      for(let i=0;i<sentence.length;i++){ if(input.value[i]===sentence[i]) correct++; }
+      totalCorrectChars += correct;
+      totalCharsTyped += sentence.length;
+      const sentenceScore = Math.max(0, correct*2 - (sentence.length-correct));
+      score += sentenceScore;
+      if(correct===sentence.length) sfxGood(); else sfxTick();
+      document.getElementById('sprintScore').textContent = score;
+      updateLiveStats();
+      nextSentence();
+    }
+  });
+
+  nextSentence();
+  setTimeout(()=> input.focus(), 150);
+
+  const timerPill = document.getElementById('sprintTimerPill');
+  const t = setInterval(()=>{
+    secs--;
+    updateLiveStats();
+    if(secs<=10 && secs>0){ timerPill.classList.add('urgent'); sfxTick(); }
+    timerPill.textContent = Math.max(secs,0)+'s';
+    if(secs<=0){
+      clearInterval(t);
+      finished = true;
+      input.blur();
+      const elapsedMin = ROUND_SECONDS/60;
+      const wpm = Math.max(0, Math.round((totalCorrectChars/5)/elapsedMin));
+      const acc = totalCharsTyped>0 ? Math.round(totalCorrectChars/totalCharsTyped*100) : 100;
+      onEnd(score, `⌨️ ${wpm} WPM · 🎯 ${acc}% accuracy`);
+    }
+  },1000);
+  activeTimers.push(t);
+}
+
+/* ============================================================
+   GAME 3 — KEY NINJA
+   ============================================================ */
+let ninjaKeyHandler = null;
+
+function startNinjaIntro(){
+  showScreen('screen-ninja');
+  document.getElementById('ninjaHud').innerHTML = '';
+  const stage = document.getElementById('ninjaStage');
+  stage.innerHTML = `
+    <div class="center-msg">
+      <div class="big-emoji">⌨️</div>
+      <h2>Key Ninja</h2>
+      <p>A letter flashes on screen — press that exact key on your keyboard as fast as you can! Build a streak for bonus points.</p>
+      <button class="startbtn" id="ninjaStartBtn">▶️ Start Round</button>
+    </div>`;
+  document.getElementById('ninjaStartBtn').onclick = ()=> runSession(playNinjaRound, (results)=>{
+    renderResults(document.getElementById('ninjaStage'), results, 'Key Ninja', startNinjaIntro);
+  });
+}
+
+function playNinjaRound(label, onEnd){
+  const stage = document.getElementById('ninjaStage');
+  const hud = document.getElementById('ninjaHud');
+  let score = 0, secs = ROUND_SECONDS, streak = 0, best = 0;
+  const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let current = '';
+
+  hud.innerHTML = `
+    <span class="pill turn">🎮 ${escapeHtml(label)}'s turn</span>
+    <span class="pill">⚡ <span id="ninjaScore">0</span></span>
+    <span class="pill timer" id="ninjaTimerPill">${secs}s</span>`;
+
+  stage.innerHTML = `
+    <div class="ninja-wrap">
+      <div class="ninja-key" id="ninjaKey">A</div>
+      <div class="ninja-streak" id="ninjaStreak"></div>
+      <div class="ninja-hint">Press the key shown above on your keyboard.</div>
+    </div>`;
+
+  const keyEl = document.getElementById('ninjaKey');
+
+  function nextLetter(){
+    let n;
+    do{ n = LETTERS[Math.floor(Math.random()*LETTERS.length)]; }while(n===current && LETTERS.length>1);
+    current = n;
+    keyEl.textContent = current;
+    keyEl.classList.remove('hit','miss');
+  }
+  nextLetter();
+
+  ninjaKeyHandler = function(e){
+    if(secs<=0) return;
+    if(e.key.length!==1) return;
+    const pressed = e.key.toUpperCase();
+    if(!LETTERS.includes(pressed)) return;
+    if(pressed===current){
+      streak++; best = Math.max(best,streak);
+      let gained = 5 + (streak%5===0 ? 15 : 0);
+      score += gained;
+      sfxKey();
+      keyEl.classList.remove('miss'); keyEl.classList.add('hit');
+    } else {
+      streak = 0;
+      score = Math.max(0, score-1);
+      sfxBad();
+      keyEl.classList.remove('hit'); keyEl.classList.add('miss');
+    }
+    document.getElementById('ninjaScore').textContent = score;
+    document.getElementById('ninjaStreak').textContent = streak>=2 ? `🔥 Streak x${streak}` : '';
+    nextLetter();
+  };
+  document.addEventListener('keydown', ninjaKeyHandler);
+
+  const timerPill = document.getElementById('ninjaTimerPill');
+  const t = setInterval(()=>{
+    secs--;
+    if(secs<=10 && secs>0){ timerPill.classList.add('urgent'); sfxTick(); }
+    timerPill.textContent = Math.max(secs,0)+'s';
+    if(secs<=0){
+      clearInterval(t);
+      document.removeEventListener('keydown', ninjaKeyHandler);
+      onEnd(score, `🔥 Best streak: ${best}`);
+    }
+  },1000);
+  activeTimers.push(t);
+}
+
+/* ============================================================
+   EDITOR MODAL
+   ============================================================ */
+let editingGame = null;
+const modalBackdrop = document.getElementById('modalBackdrop');
+const modalTitle = document.getElementById('modalTitle');
+const modalHint = document.getElementById('modalHint');
+const modalTextarea = document.getElementById('modalTextarea');
+const modalErr = document.getElementById('modalErr');
+
+function openEditor(game){
+  editingGame = game;
+  modalErr.style.display='none';
+  if(game==='rain'){
+    modalTitle.textContent = 'Edit Word Rain word list';
+    modalHint.innerHTML = 'One word per line. Keep words short and free of spaces for best results.';
+    modalTextarea.value = wordList.join('\n');
+  } else if(game==='sprint'){
+    modalTitle.textContent = 'Edit Sentence Sprint sentences';
+    modalHint.innerHTML = 'One sentence per line. Keep punctuation simple (periods and commas work best).';
+    modalTextarea.value = sentenceList.join('\n');
+  }
+  modalBackdrop.classList.add('active');
+}
+function closeEditor(){ modalBackdrop.classList.remove('active'); editingGame=null; }
+function resetEditorToDefault(){
+  if(editingGame==='rain') modalTextarea.value = DEFAULT_WORDS.join('\n');
+  if(editingGame==='sprint') modalTextarea.value = DEFAULT_SENTENCES.join('\n');
+}
+function saveEditor(){
+  const lines = modalTextarea.value.split('\n').map(l=>l.trim()).filter(Boolean);
+  modalErr.style.display='none';
+  try{
+    if(editingGame==='rain'){
+      if(lines.length<6) throw new Error('Please keep at least 6 words for good variety.');
+      if(lines.some(w=>/\s/.test(w))) throw new Error('Words should not contain spaces — use one word per line.');
+      wordList = lines; saveList('typedash_words', wordList);
+    } else if(editingGame==='sprint'){
+      if(lines.length<4) throw new Error('Please keep at least 4 sentences.');
+      sentenceList = lines; saveList('typedash_sentences', sentenceList);
+    }
+    closeEditor();
+  }catch(err){
+    modalErr.textContent = '⚠️ ' + err.message;
+    modalErr.style.display='block';
+  }
+}
+</script>
+</body>
+</html>
